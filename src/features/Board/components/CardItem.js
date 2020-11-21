@@ -15,9 +15,13 @@ const useStyles = (themeColor) =>
       borderRadius: 4,
       backgroundColor: themeColor,
       "& h6": {
-        color: "white",
+				color: "white",
+				lineBreak: "anywhere",
       },
-    },
+		},
+		buttonContainer: {
+			display: "flex",
+		}
   });
 
 function CardItem({
@@ -52,7 +56,7 @@ function CardItem({
   return (
     <div className={classes.root}>
       <Typography variant="subtitle1">{content}</Typography>
-      <div>
+      <div className={classes.buttonContainer}>
         <IconButton onClick={handleOpenModalEdit}>
           <EditIcon />
         </IconButton>

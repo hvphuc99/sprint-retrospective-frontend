@@ -41,8 +41,10 @@ function ModalShareBoard({ open = false, onClose = () => {} }) {
           label="URL"
           autoComplete="off"
           autoFocus={true}
-					value={process.env.REACT_APP_URL + match.url}
+					// value={process.env.REACT_APP_URL + match.url}
+					value={"localhost:3000" + match.url}
 					fullWidth
+					multiline
         />
       </DialogContent>
 

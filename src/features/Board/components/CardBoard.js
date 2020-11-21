@@ -59,13 +59,11 @@ const useStyles = makeStyles({
   },
 });
 
-function CardBoard(props) {
+function CardBoard({ id, name}) {
   const classes = useStyles();
 
   const history = useHistory();
   const dispatch = useDispatch();
-
-	const { id, name } = props;
 
   const handleCardClick = () => {
 		dispatch(resetBoard());

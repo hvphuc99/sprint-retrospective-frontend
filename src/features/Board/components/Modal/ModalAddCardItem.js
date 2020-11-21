@@ -11,6 +11,7 @@ import React from "react";
 import CloseIcon from "@material-ui/icons/Close";
 import * as Yup from "yup";
 import { Form, Formik } from "formik";
+import { useRef } from "react";
 
 const useStyles = makeStyles({
   title: {
@@ -37,6 +38,7 @@ function ModalAddCardItem({
   onClose = () => {},
 }) {
   const classes = useStyles();
+  const refSubmit = useRef();
 
   const initialValues = {
     content: "",
@@ -45,6 +47,13 @@ function ModalAddCardItem({
   const validationSchema = Yup.object().shape({
     content: Yup.string().trim().required("Required"),
   });
+
+  const handleUserKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      refSubmit.current.click();
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth={true}>
@@ -57,8 +66,8 @@ function ModalAddCardItem({
       <div className={classes.form}>
         <Formik
           initialValues={initialValues}
-					validationSchema={validationSchema}
-					onSubmit={onSubmit}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
         >
           {({
             values,
@@ -79,11 +88,18 @@ function ModalAddCardItem({
                 onChange={handleChange}
                 onBlur={handleBlur}
                 error={Boolean(errors.content) && touched.content}
-								helperText={errors.content}
+                helperText={errors.content}
+                multiline
+                onKeyPress={handleUserKeyPress}
               />
 
               <div className={classes.formFooter}>
-                <Button variant="contained" color="primary" type="submit">
+                <Button
+                  ref={refSubmit}
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
                   Add
                 </Button>
               </div>

@@ -38,6 +38,13 @@ const boardApi = {
 		};
 		return axiosClient.put(url, params);
 	},
+	privateBoard: (boardId) => {
+		const url = `/boards/${boardId}`;
+		const params = {
+			public: false,
+		};
+		return axiosClient.put(url, params);
+	},
 }
 
 export default boardApi;

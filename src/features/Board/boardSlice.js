@@ -1,8 +1,10 @@
+import { FormatListBulleted } from "@material-ui/icons";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
 	currentBoardId: null,
 	currentBoardName: "",
+	creatorBoard: false,
 	privateBoardList: [],
 	publicBoardList: [],
 	wellWentCardList: [],
@@ -98,6 +100,9 @@ const boardSlice = createSlice({
 				return card;
 			});
 		},
+		setCreatorBoard: (state, action) => {
+			state.creatorBoard = action.payload;
+		},
 		resetBoard: (state, action) => initialState,
   },
 });
@@ -123,5 +128,6 @@ export const {
 	updateToImproveCardList,
 	updateActionItemsCardList,
 	resetBoard,
+	setCreatorBoard,
 } = actions;
 export default reducer;

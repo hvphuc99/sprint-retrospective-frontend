@@ -11,6 +11,7 @@ import React from "react";
 import CloseIcon from "@material-ui/icons/Close";
 import * as Yup from "yup";
 import { Form, Formik } from "formik";
+import { useRef } from "react";
 
 const useStyles = makeStyles({
   title: {
@@ -36,15 +37,23 @@ function ModalAddCardBoard({
   onSubmit = () => {},
   onClose = () => {},
 }) {
-	const classes = useStyles();
-	
-	const initialValues = {
-		name: "",
-	}
+  const classes = useStyles();
+  const refSubmit = useRef();
 
-	const validationSchema = Yup.object().shape({
-		name: Yup.string().trim().required("Required"),
-	})
+  const initialValues = {
+    name: "",
+  };
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().trim().required("Required"),
+  });
+
+  const handleUserKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      refSubmit.current.click();
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth={true}>
@@ -55,34 +64,48 @@ function ModalAddCardBoard({
         </IconButton>
       </DialogTitle>
       <div className={classes.form}>
-				<Formik
-					initialValues={initialValues}
-					validationSchema={validationSchema}
-					onSubmit={onSubmit}
-				>
-					{({ values, handleSubmit, handleChange, handleBlur, errors, touched }) => (
-						<Form>
-						<TextField
-							name="name"
-							label="Name"
-							value={values.name}
-							autoComplete="off"
-							autoFocus={true}
-							fullWidth
-							onChange={handleChange}
-							onBlur={handleBlur}
-							error={Boolean(errors.name) && touched.name}
-							helperText={errors.name}
-						/>
-	
-						<div className={classes.formFooter}>
-							<Button variant="contained" color="primary" type="submit">
-								Add
-							</Button>
-						</div>
-					</Form>
-					)}
-				</Formik>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
+        >
+          {({
+            values,
+            handleSubmit,
+            handleChange,
+            handleBlur,
+            errors,
+            touched,
+          }) => (
+            <Form>
+              <TextField
+                name="name"
+                label="Name"
+                value={values.name}
+                autoComplete="off"
+                autoFocus={true}
+                fullWidth
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={Boolean(errors.name) && touched.name}
+                helperText={errors.name}
+                multiline
+                onKeyPress={handleUserKeyPress}
+              />
+
+              <div className={classes.formFooter}>
+                <Button
+                  ref={refSubmit}
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
+                  Add
+                </Button>
+              </div>
+            </Form>
+          )}
+        </Formik>
       </div>
     </Dialog>
   );

@@ -38,8 +38,8 @@ function PrivateBoard(props) {
           <AddCardBoard />
         </Box>
         {boards.map((board) => {
-          const { id, name } = board;
-
+					const { id, name } = board;
+					
           return (
             <Box className={classes.cardBoard}>
               <CardBoard id={id} name={name} />

@@ -33,7 +33,7 @@ function Main() {
   };
 
   const getPublicBoardList = async () => {
-    const boards = await boardApi.getPublicBoards();
+		const boards = await boardApi.getPublicBoards();
     dispatch(setPublicBoardList(boards));
   };
 

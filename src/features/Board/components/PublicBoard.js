@@ -38,14 +38,14 @@ function PublicBoard(props) {
     <Box className={classes.root}>
       <Box className={classes.header}>
         <Typography variant="h6">Public boards</Typography>
-        <Typography variant="subtitle2">
+        {/* <Typography variant="subtitle2">
           collaborate by sharing URL with people
-        </Typography>
+        </Typography> */}
       </Box>
       <Box className={classes.cardContainer}>
         {boards.map((board) => {
 					const { id, name } = board;
-
+					
           return (
             <Box className={classes.cardBoard}>
               <CardBoard id={id} name={name} />

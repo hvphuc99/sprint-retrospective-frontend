@@ -26,7 +26,7 @@ import { setLoading } from "app/loadingSlice";
 import BoardNameInput from "../components/BoardNameInput";
 import ColumnBoard from "../components/ColumnBoard";
 import * as columnType from "constants/columnType";
-import ShareDelete from "../components/ShareDelete";
+import SharePrivateDelete from "../components/SharePrivateDelete";
 
 const useStyles = makeStyles({
   root: {
@@ -52,7 +52,7 @@ const useStyles = makeStyles({
   },
 });
 
-function BoardDetail(props) {
+function BoardDetail() {
   const classes = useStyles();
 
   const { currentBoardId } = useSelector((state) => state.board);
@@ -68,7 +68,9 @@ function BoardDetail(props) {
     actionItemsCardList,
   } = useSelector((state) => state.board);
   const dispatch = useDispatch();
-  const history = useHistory();
+	const history = useHistory();
+	const [creatorBoard, setCreatorBoard] = useState(false);
+	const [publicBoard, setPublicBoard] = useState(true);
 
   const handleEditName = (value) => () => {
     if (edit) {
@@ -97,13 +99,29 @@ function BoardDetail(props) {
       .shareBoard(currentBoardId)
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
+	};
+	
+	const handlePrivateBoard = () => {
+    boardApi
+      .privateBoard(currentBoardId)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
   };
 
   const getBoardName = async (boardId) => {
-    const board = await boardApi.getBoard(boardId);
-    const { id, name } = board;
-    setBoardName(name);
-    dispatch(setCurrentBoardId(id));
+		return new Promise((resolve, reject) => {
+			boardApi.getBoard(boardId).then(response => {
+				const { id, name, public: publish } = response.board;
+				const { creator } = response;
+				setCreatorBoard(creator);
+				setBoardName(name);
+				setPublicBoard(publish);
+				dispatch(setCurrentBoardId(id));
+				resolve();
+			}).catch(err => {
+				reject(err);
+			})
+		})
   };
 
   const getCardOfColumns = async (boardId) => {
@@ -198,14 +216,16 @@ function BoardDetail(props) {
     const boardId = list[list.length - 1];
     Promise.all([getBoardName(boardId), getCardOfColumns(boardId)]).then(() => {
       dispatch(setLoading(false));
-    });
+    }).catch((err) => {
+			history.push("/");
+		})
   }, []);
 
   return (
     <div className={classes.root}>
       <div className={classes.header}>
-        <BoardNameInput name={boardName} edit={edit} toggle={handleEditName} />
-				<ShareDelete onShare={handleShareBoard} onDelete={handleDeleteBoard} />
+        <BoardNameInput name={boardName} edit={creatorBoard && edit} toggle={handleEditName} />
+				{creatorBoard && <SharePrivateDelete onShare={handleShareBoard} onPrivate={handlePrivateBoard} onDelete={handleDeleteBoard} publish={publicBoard} />}
       </div>
 
       <div className={classes.content}>
