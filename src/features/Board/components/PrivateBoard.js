@@ -13,20 +13,18 @@ const useStyles = makeStyles({
     },
   },
   cardContainer: {
-		display: "flex",
-		flexWrap: "wrap",
+    display: "flex",
+    flexWrap: "wrap",
   },
   cardBoard: {
-		width: 250,
-		height: 200,
+    width: 250,
+    height: 200,
     margin: 10,
   },
 });
 
-function PrivateBoard(props) {
+function PrivateBoard({ boards = [], onSubmitAddCard = () => {} }) {
   const classes = useStyles();
-
-  const { boards } = props;
 
   return (
     <Box className={classes.root}>
@@ -35,11 +33,11 @@ function PrivateBoard(props) {
       </Box>
       <Box className={classes.cardContainer}>
         <Box className={classes.cardBoard}>
-          <AddCardBoard />
+          <AddCardBoard onSubmit={onSubmitAddCard} />
         </Box>
         {boards.map((board) => {
-					const { id, name } = board;
-					
+          const { id, name } = board;
+
           return (
             <Box className={classes.cardBoard}>
               <CardBoard id={id} name={name} />

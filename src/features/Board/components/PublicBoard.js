@@ -29,10 +29,8 @@ const useStyles = makeStyles({
   },
 });
 
-function PublicBoard(props) {
+function PublicBoard({ boards = [] }) {
   const classes = useStyles();
-
-  const { boards } = props;
 
   return (
     <Box className={classes.root}>

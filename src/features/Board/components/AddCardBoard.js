@@ -35,7 +35,7 @@ const useStyles = makeStyles({
   },
 });
 
-function AddCardBoard(props) {
+function AddCardBoard({ onSubmit = () => {}}) {
   const classes = useStyles();
 
   const [openModalAddBoard, setOpenModalAddBoard] = useState(false);
@@ -50,13 +50,7 @@ function AddCardBoard(props) {
   };
 
   const handleSubmit = (event) => {
-    const {name} = event;
-    boardApi
-      .createBoard(name)
-      .then((board) => {
-        dispatch(addPrivateBoardList(board));
-      })
-      .catch((err) => console.log(err));
+		onSubmit(event);
     setOpenModalAddBoard(false);
   };
 

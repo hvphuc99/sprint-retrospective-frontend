@@ -2,6 +2,7 @@ import { Box, makeStyles, Typography } from "@material-ui/core";
 import boardApi from "api/boardApi";
 import { setLoading } from "app/loadingSlice";
 import {
+	addPrivateBoardList,
   setPrivateBoardList,
   setPublicBoardList,
 } from "features/Board/boardSlice";
@@ -35,6 +36,16 @@ function Main() {
   const getPublicBoardList = async () => {
 		const boards = await boardApi.getPublicBoards();
     dispatch(setPublicBoardList(boards));
+	};
+	
+	const handleSubmitAddCard = (event) => {
+    const {name} = event;
+    boardApi
+      .createBoard(name)
+      .then((board) => {
+        dispatch(addPrivateBoardList(board));
+      })
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -50,7 +61,7 @@ function Main() {
   return (
     <Box className={classes.board}>
       <Typography variant="h4">My boards</Typography>
-      <PrivateBoard boards={privateBoardList} />
+      <PrivateBoard boards={privateBoardList} onSubmitAddCard={handleSubmitAddCard} />
       <PublicBoard boards={publicBoardList} />
     </Box>
   );
