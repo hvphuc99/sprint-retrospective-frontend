@@ -14,12 +14,13 @@ function Profile() {
   const dispatch = useDispatch();
 
   const handleSubmit = (event) => {
+    dispatch(setLoading(true));
     const { firstName, lastName } = event;
 
     userApi
       .updateProfile(firstName, lastName)
       .then((res) => {
-        console.log(res);
+        dispatch(setLoading(false));
       })
       .catch((err) => console.log(err));
   };
