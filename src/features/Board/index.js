@@ -6,14 +6,14 @@ import BoardDetail from "./pages/BoardDetail";
 import Main from "./pages/Main";
 
 function Board() {
-  const match = useRouteMatch();
+	const match = useRouteMatch();
 
   return (
     <>
-      <Header />
+			<Header />
 			<Switch>
 				<PrivateRoute exact path={match.url} component={Main} />
-				<PrivateRoute path={`${match.url}/:id`} component={BoardDetail} />
+				<PrivateRoute exact path={`${match.url}/:id`} component={BoardDetail} />
 			</Switch>
 		</>
   );

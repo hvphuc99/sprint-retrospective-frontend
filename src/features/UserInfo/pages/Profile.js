@@ -7,6 +7,7 @@ import {
 } from "@material-ui/core";
 import userApi from "api/userApi";
 import { setLoading } from "app/loadingSlice";
+import Header from "components/Header";
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -75,28 +76,31 @@ function Profile(props) {
   }, []);
 
   return (
-    <Box className={classes.form}>
-      <Typography variant="h4">Profile</Typography>
-      <form onSubmit={handleSubmit}>
-        <div className={classes.formContent}>
-          <TextField
-            name="firstName"
-            label="First Name"
-            value={firstName}
-            onChange={handleChangeFirstName}
-          />
-          <TextField
-            name="lastName"
-            label="Last Name"
-            value={lastName}
-            onChange={handleChangeLastName}
-          />
-          <Button variant="contained" color="primary" type="submit">
-            Update
-          </Button>
-        </div>
-      </form>
-    </Box>
+    <>
+			<Header />
+			<Box className={classes.form}>
+				<Typography variant="h4">Profile</Typography>
+				<form onSubmit={handleSubmit}>
+					<div className={classes.formContent}>
+						<TextField
+							name="firstName"
+							label="First Name"
+							value={firstName}
+							onChange={handleChangeFirstName}
+						/>
+						<TextField
+							name="lastName"
+							label="Last Name"
+							value={lastName}
+							onChange={handleChangeLastName}
+						/>
+						<Button variant="contained" color="primary" type="submit">
+							Update
+						</Button>
+					</div>
+				</form>
+			</Box>
+		</>
   );
 }
 

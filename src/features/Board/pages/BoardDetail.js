@@ -54,7 +54,7 @@ const useStyles = makeStyles({
 
 function BoardDetail() {
   const classes = useStyles();
-
+debugger
   const { currentBoardId } = useSelector((state) => state.board);
   const [edit, setEdit] = useState(false);
   const [boardName, setBoardName] = useState("");
