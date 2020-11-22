@@ -3,6 +3,9 @@ import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import ModalShareBoard from "./Modal/ModalShareBoard";
+import ShareIcon from '@material-ui/icons/Share';
+import LockIcon from '@material-ui/icons/Lock';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles({
 	root: {
@@ -46,16 +49,16 @@ function SharePrivateDelete({
     <>
       <div className={classes.root}>
         {sharing ? (
-          <Button variant="contained" color="primary" onClick={handlePrivate}>
+          <Button variant="contained" color="primary" onClick={handlePrivate} startIcon={<LockIcon />}>
             Set Private
           </Button>
         ) : (
-          <Button variant="contained" color="primary" onClick={handleShare}>
+          <Button variant="contained" color="primary" onClick={handleShare} startIcon={<ShareIcon />}>
             Share
           </Button>
         )}
 
-        <Button variant="contained" color="secondary" onClick={onDelete}>
+        <Button variant="contained" color="secondary" onClick={onDelete} startIcon={<DeleteIcon />}>
           Delete
         </Button>
       </div>
