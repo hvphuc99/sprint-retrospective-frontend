@@ -1,40 +1,18 @@
 import {
   AppBar,
-  Box,
   IconButton,
   makeStyles,
   Tab,
   Tabs,
-  Typography,
 } from "@material-ui/core";
 import { removeToken } from "app/userSlice";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { resetBoard } from "features/Board/boardSlice";
 import { useState } from "react";
 import { useEffect } from "react";
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
+import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 
 function a11yProps(index) {
   return {
@@ -78,50 +56,49 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const tabs = [
-	{
-		label: "My Board",
-		url: "/boards",
-	},
-	{
-		label: "Profile",
-		url: "/profile",
-	},
+  {
+    label: "My Board",
+    url: "/boards",
+  },
+  {
+    label: "Profile",
+    url: "/profile",
+  },
 ];
-
 
 function Header() {
   const classes = useStyles();
 
   const history = useHistory();
   const dispatch = useDispatch();
-	const [value, setValue] = useState(-1);
-	const location = useLocation();
+  const [value, setValue] = useState(-1);
+  const location = useLocation();
 
   const handleChange = (event, newValue) => {
-		setValue(newValue);
-		const newUrl = tabs[newValue].url;
-		history.push(newUrl);
-	};
+    setValue(newValue);
+    const newUrl = tabs[newValue].url;
+    history.push(newUrl);
+  };
 
   const handleLogoutClick = () => {
     dispatch(removeToken());
     dispatch(resetBoard());
     history.push("/login");
-	};
+  };
 
-	useEffect(() => {
-		const path = location.pathname;
+  useEffect(() => {
+    const path = location.pathname;
 
-		if (path === "/boards") {
-			setValue(0);
-		} else {
-			if (path === "/profile") {
-				setValue(1);
-			} else {
-				setValue(-1);
-			}
-		}
-	}, [location])
+    if (path === "/boards") {
+      setValue(0);
+    } else {
+      if (path === "/profile") {
+        setValue(1);
+      } else {
+        setValue(-1);
+      }
+    }
+  }, [location]);
 
   return (
     <div className={classes.root}>
@@ -142,8 +119,7 @@ function Header() {
           onClick={handleLogoutClick}
           color="inherit"
         >
-          <Typography variant="h6">Logout</Typography>
-          <ExitToAppIcon />
+          <PowerSettingsNewIcon />
         </IconButton>
       </AppBar>
     </div>
