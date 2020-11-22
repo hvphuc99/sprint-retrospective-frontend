@@ -87,7 +87,7 @@ function ModalEditCardItem({
                 autoComplete="off"
                 autoFocus={true}
                 error={Boolean(errors.content) && touched.content}
-                helperText={errors.content}
+                helperText={touched.content && errors.content}
                 fullWidth
                 multiline
                 onKeyPress={handleUserKeyPress}

@@ -88,7 +88,7 @@ function ModalAddCardItem({
                 onChange={handleChange}
                 onBlur={handleBlur}
                 error={Boolean(errors.content) && touched.content}
-                helperText={errors.content}
+                helperText={touched.content && errors.content}
                 multiline
                 onKeyPress={handleUserKeyPress}
               />
