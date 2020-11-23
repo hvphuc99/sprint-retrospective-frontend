@@ -27,6 +27,8 @@ import BoardNameInput from "../components/BoardNameInput";
 import ColumnBoard from "../components/ColumnBoard";
 import * as columnType from "constants/columnType";
 import SharePrivateDelete from "../components/SharePrivateDelete";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { CardMembershipTwoTone } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   root: {
@@ -52,6 +54,26 @@ const useStyles = makeStyles({
   },
 });
 
+const itemsFromBackend = [
+  { cardId: 1, content: "First task" },
+  { cardId: 2, content: "Second task" },
+  { cardId: 3, content: "Third task" },
+];
+
+const columnsFromBackend = [
+	{
+		"id": 4,
+		"name": "Well Went",
+		"cards": itemsFromBackend,
+},
+{
+		"id": 5,
+		"name": "To Improve",
+		"cards": [],
+},
+]
+
+
 function BoardDetail() {
 	const classes = useStyles();
 	
@@ -71,6 +93,8 @@ function BoardDetail() {
 	const history = useHistory();
 	const [creatorBoard, setCreatorBoard] = useState(false);
 	const [publicBoard, setPublicBoard] = useState(true);
+
+	const [columns, setColumns] = useState(columnsFromBackend);
 
   const handleEditName = (value) => () => {
     if (edit) {
@@ -229,7 +253,7 @@ function BoardDetail() {
       </div>
 
       <div className={classes.content}>
-        <Grid container>
+        {/* <Grid container>
           <Grid item xs={4}>
             <div className={classes.contentItem}>
               <ColumnBoard
@@ -296,8 +320,82 @@ function BoardDetail() {
               />
             </div>
           </Grid>
-        </Grid>
-      </div>
+        </Grid> */}
+      <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
+      <DragDropContext
+        // onDragEnd={result => onDragEnd(result, columns, setColumns)}
+      >
+        {columns.map(({id, name, cards}, index) => {
+          return (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
+              }}
+              key={id}
+            >
+              <h2>{name}</h2>
+              <div style={{ margin: 8 }}>
+                <Droppable droppableId={id} key={id}>
+                  {(provided, snapshot) => {
+                    return (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        style={{
+                          background: snapshot.isDraggingOver
+                            ? "lightblue"
+                            : "lightgrey",
+                          padding: 4,
+                          width: 250,
+                          minHeight: 500
+                        }}
+                      >
+                        {cards.map(({cardId, content}, index) => {
+                          return (
+                            <Draggable
+                              key={cardId}
+                              draggableId={cardId}
+                              index={index}
+                            >
+                              {(provided, snapshot) => {
+                                return (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    style={{
+                                      userSelect: "none",
+                                      padding: 16,
+                                      margin: "0 0 8px 0",
+                                      minHeight: "50px",
+                                      backgroundColor: snapshot.isDragging
+                                        ? "#263B4A"
+                                        : "#456C86",
+                                      color: "white",
+                                      ...provided.draggableProps.style
+                                    }}
+                                  >
+                                    {content}
+                                  </div>
+                                );
+                              }}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
+                      </div>
+                    );
+                  }}
+                </Droppable>
+              </div>
+            </div>
+          );
+        })}
+      </DragDropContext>
+    </div>
+			</div>
     </div>
   );
 }
