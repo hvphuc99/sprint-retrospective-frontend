@@ -1,4 +1,4 @@
-import { Grid, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import React from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,11 +24,11 @@ import {
 } from "features/Board/boardSlice";
 import { setLoading } from "app/loadingSlice";
 import BoardNameInput from "../components/BoardNameInput";
-import ColumnBoard from "../components/ColumnBoard";
 import * as columnType from "constants/columnType";
 import SharePrivateDelete from "../components/SharePrivateDelete";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { CardMembershipTwoTone } from "@material-ui/icons";
+import CardItem from "../components/CardItem";
+import AddCardItem from "../components/AddCardItem";
 
 const useStyles = makeStyles({
   root: {
@@ -44,39 +44,19 @@ const useStyles = makeStyles({
   content: {
     padding: "30px 0px",
   },
-  contentItem: {
-    display: "flex",
-    flexDirection: "column",
-    padding: "0px 10px",
+  columnContainer: {
+    margin: 8,
   },
-  cardItem: {
-    margin: "10px 0px 0px 0px",
+  addButton: {
+    paddingLeft: 4,
+    paddingRight: 4,
+    marginBottom: 8,
   },
 });
 
-const itemsFromBackend = [
-  { cardId: 1, content: "First task" },
-  { cardId: 2, content: "Second task" },
-  { cardId: 3, content: "Third task" },
-];
-
-const columnsFromBackend = [
-	{
-		"id": 4,
-		"name": "Well Went",
-		"cards": itemsFromBackend,
-},
-{
-		"id": 5,
-		"name": "To Improve",
-		"cards": [],
-},
-]
-
-
 function BoardDetail() {
-	const classes = useStyles();
-	
+  const classes = useStyles();
+
   const { currentBoardId } = useSelector((state) => state.board);
   const [edit, setEdit] = useState(false);
   const [boardName, setBoardName] = useState("");
@@ -90,11 +70,11 @@ function BoardDetail() {
     actionItemsCardList,
   } = useSelector((state) => state.board);
   const dispatch = useDispatch();
-	const history = useHistory();
-	const [creatorBoard, setCreatorBoard] = useState(false);
-	const [publicBoard, setPublicBoard] = useState(true);
+  const history = useHistory();
+  const [creatorBoard, setCreatorBoard] = useState(false);
+  const [publicBoard, setPublicBoard] = useState(true);
 
-	const [columns, setColumns] = useState(columnsFromBackend);
+  const [columns, setColumns] = useState([]);
 
   const handleEditName = (value) => () => {
     if (edit) {
@@ -123,9 +103,9 @@ function BoardDetail() {
       .shareBoard(currentBoardId)
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
-	};
-	
-	const handlePrivateBoard = () => {
+  };
+
+  const handlePrivateBoard = () => {
     boardApi
       .privateBoard(currentBoardId)
       .then((res) => console.log(res))
@@ -133,19 +113,22 @@ function BoardDetail() {
   };
 
   const getBoardName = async (boardId) => {
-		return new Promise((resolve, reject) => {
-			boardApi.getBoard(boardId).then(response => {
-				const { id, name, public: publish } = response.board;
-				const { creator } = response;
-				setCreatorBoard(creator);
-				setBoardName(name);
-				setPublicBoard(publish);
-				dispatch(setCurrentBoardId(id));
-				resolve();
-			}).catch(err => {
-				reject(err);
-			})
-		})
+    return new Promise((resolve, reject) => {
+      boardApi
+        .getBoard(boardId)
+        .then((response) => {
+          const { id, name, public: publish } = response.board;
+          const { creator } = response;
+          setCreatorBoard(creator);
+          setBoardName(name);
+          setPublicBoard(publish);
+          dispatch(setCurrentBoardId(id));
+          resolve();
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
   };
 
   const getCardOfColumns = async (boardId) => {
@@ -185,17 +168,33 @@ function BoardDetail() {
     const { content } = event;
 
     cardApi.addCard(currentBoardId, columnId, content).then((res) => {
-      const { card } = res;
+			const { card } = res;
+			card.optionAdd = true;
       if (type === columnType.WELL_WENT) {
-        dispatch(addWellWentCardList(card));
+        dispatch(updateWellWentCardList(card));
       }
       if (type === columnType.TO_IMPROVE) {
-        dispatch(addToImproveCardList(card));
+        dispatch(updateToImproveCardList(card));
       }
       if (type === columnType.ACTION_ITEMS) {
-        dispatch(addActionItemsCardList(card));
+        dispatch(updateActionItemsCardList(card));
       }
-    });
+		});
+
+		const newCard = {
+			id: -1,
+			content,
+		}
+		
+		if (type === columnType.WELL_WENT) {
+			dispatch(addWellWentCardList(newCard));
+		}
+		if (type === columnType.TO_IMPROVE) {
+			dispatch(addToImproveCardList(newCard));
+		}
+		if (type === columnType.ACTION_ITEMS) {
+			dispatch(addActionItemsCardList(newCard));
+		}
   };
 
   const handleSubmitUpdateCard = (columnId, type) => (event, cardId) => {
@@ -203,199 +202,362 @@ function BoardDetail() {
 
     cardApi
       .updateCard(currentBoardId, columnId, cardId, content)
-      .then((res) => {
-        const params = {
-          cardId,
-          newContent: content,
-        };
-        if (type === columnType.WELL_WENT) {
-          dispatch(updateWellWentCardList(params));
-        }
-        if (type === columnType.TO_IMPROVE) {
-          dispatch(updateToImproveCardList(params));
-        }
-        if (type === columnType.ACTION_ITEMS) {
-          dispatch(updateActionItemsCardList(params));
-        }
-      });
+      .then((res) => {});
+
+    const params = {
+      cardId,
+      newContent: content,
+    };
+    if (type === columnType.WELL_WENT) {
+      dispatch(updateWellWentCardList(params));
+    }
+    if (type === columnType.TO_IMPROVE) {
+      dispatch(updateToImproveCardList(params));
+    }
+    if (type === columnType.ACTION_ITEMS) {
+      dispatch(updateActionItemsCardList(params));
+    }
   };
 
   const handleSubmitDeleteCard = (columnId, type) => (cardId) => {
-    cardApi.deleteCard(currentBoardId, columnId, cardId).then((res) => {
-      if (type === columnType.WELL_WENT) {
-        dispatch(removeWellWentCardList(cardId));
-      }
-      if (type === columnType.TO_IMPROVE) {
-        dispatch(removeToImproveCardList(cardId));
-      }
-      if (type === columnType.ACTION_ITEMS) {
-        dispatch(removeActionItemsCardList(cardId));
-      }
-    });
+    cardApi.deleteCard(currentBoardId, columnId, cardId).then((res) => {});
+    if (type === columnType.WELL_WENT) {
+      dispatch(removeWellWentCardList(cardId));
+    }
+    if (type === columnType.TO_IMPROVE) {
+      dispatch(removeToImproveCardList(cardId));
+    }
+    if (type === columnType.ACTION_ITEMS) {
+      dispatch(removeActionItemsCardList(cardId));
+    }
+  };
+
+  const onDragEnd = (result, columns, setColumns) => {
+    if (!result.destination) return;
+    const { source, destination } = result;
+
+    if (source.droppableId !== destination.droppableId) {
+      const sourceColumn = columns.find(
+        (column) => column.id + "column" === source.droppableId
+      );
+      const destColumn = columns.find(
+        (column) => column.id + "column" === destination.droppableId
+      );
+      const sourceItems = [...sourceColumn.cards];
+      const destItems = [...destColumn.cards];
+      const [removed] = sourceItems.splice(source.index, 1);
+      destItems.splice(destination.index, 0, removed);
+      const newColumns = columns.map((column) => {
+        if (column.id + "column" === source.droppableId) {
+          column.cards = sourceItems;
+        } else {
+          if (column.id + "column" === destination.droppableId) {
+            column.cards = destItems;
+          }
+        }
+        return column;
+      });
+      setColumns(newColumns);
+
+      columns.forEach((column, index) => {
+        if (column.id === sourceColumn.id) {
+          if (index === 0) {
+            handleSubmitDeleteCard(
+              sourceColumn.id,
+              columnType.WELL_WENT
+            )(removed.id);
+          }
+          if (index === 1) {
+            handleSubmitDeleteCard(
+              sourceColumn.id,
+              columnType.TO_IMPROVE
+            )(removed.id);
+          }
+          if (index === 2) {
+            handleSubmitDeleteCard(
+              sourceColumn.id,
+              columnType.ACTION_ITEMS
+            )(removed.id);
+          }
+        }
+
+        if (column.id === destColumn.id) {
+          if (index === 0) {
+            handleSubmitAddCard(destColumn.id, columnType.WELL_WENT)(removed);
+          }
+          if (index === 1) {
+            handleSubmitAddCard(destColumn.id, columnType.TO_IMPROVE)(removed);
+          }
+          if (index === 2) {
+            handleSubmitAddCard(
+              destColumn.id,
+              columnType.ACTION_ITEMS
+            )(removed);
+          }
+        }
+      });
+    }
+    // else {
+    //   const column = columns.find((column) => column.id + "column" === source.droppableId);
+    //   const copiedItems = [...column.cards];
+    //   const [removed] = copiedItems.splice(source.index, 1);
+    //   copiedItems.splice(destination.index, 0, removed);
+    //   const newColumns = columns.map((column) => {
+    //     if (column.id + "column" === source.droppableId) {
+    //       column.cards = copiedItems;
+    //     }
+    //     return column;
+    //   });
+    // 	setColumns(newColumns);
+
+    // 	columns.forEach((columnTemp, index) => {
+    // 		if (column.id === columnTemp.id) {
+    // 			if (index === 0) {
+    // 				handleSubmitAddCard(column.id, columnType.WELL_WENT, false)(removed)
+    // 				handleSubmitDeleteCard(column.id, columnType.WELL_WENT, false)(removed.id)
+    // 			}
+    // 			if (index === 1) {
+    // 				handleSubmitDeleteCard(column.id, columnType.TO_IMPROVE, false)(removed.id)
+    // 				handleSubmitAddCard(column.id, columnType.TO_IMPROVE, false)(removed)
+    // 			}
+    // 			if (index === 2) {
+    // 				handleSubmitDeleteCard(column.id, columnType.ACTION_ITEMS, false)(removed.id)
+    // 				handleSubmitAddCard(column.id, columnType.ACTION_ITEMS, false)(removed)
+    // 			}
+    // 		}
+    // 	});
+    // }
+  };
+
+  const colorCard = (index) => () => {
+    let color = "#009688";
+
+    if (index === 1) {
+      color = "#e91e63";
+    }
+
+    if (index === 2) {
+      color = "#9c27b0";
+    }
+
+    return color;
+  };
+
+  const renderAddCard = (indexColumns) => {
+    let addCardButton = (
+      <AddCardItem
+        onSubmit={handleSubmitAddCard(wellWentCardsId, columnType.WELL_WENT)}
+      />
+    );
+
+    if (indexColumns === 1) {
+      addCardButton = (
+        <AddCardItem
+          onSubmit={handleSubmitAddCard(
+            toImproveCardsId,
+            columnType.TO_IMPROVE
+          )}
+        />
+      );
+    }
+
+    if (indexColumns === 2) {
+      addCardButton = (
+        <AddCardItem
+          onSubmit={handleSubmitAddCard(
+            actionItemsCardsId,
+            columnType.ACTION_ITEMS
+          )}
+        />
+      );
+    }
+
+    return addCardButton;
+  };
+
+  const passHandleSubmitUpdateCard = (indexColumns) => {
+    let handleSubmit = handleSubmitUpdateCard(
+      wellWentCardsId,
+      columnType.WELL_WENT
+    );
+
+    if (indexColumns === 1) {
+      handleSubmit = handleSubmitUpdateCard(
+        toImproveCardsId,
+        columnType.TO_IMPROVE
+      );
+    }
+
+    if (indexColumns === 2) {
+      handleSubmit = handleSubmitUpdateCard(
+        actionItemsCardsId,
+        columnType.ACTION_ITEMS
+      );
+    }
+
+    return handleSubmit;
+  };
+
+  const passHandleSubmitDeleteCard = (indexColumns) => {
+    let handleSubmit = handleSubmitDeleteCard(
+      wellWentCardsId,
+      columnType.WELL_WENT
+    );
+
+    if (indexColumns === 1) {
+      handleSubmit = handleSubmitDeleteCard(
+        toImproveCardsId,
+        columnType.TO_IMPROVE
+      );
+    }
+
+    if (indexColumns === 2) {
+      handleSubmit = handleSubmitDeleteCard(
+        actionItemsCardsId,
+        columnType.ACTION_ITEMS
+      );
+    }
+
+    return handleSubmit;
   };
 
   useEffect(() => {
     dispatch(setLoading(true));
     const list = match.url.split("/");
     const boardId = list[list.length - 1];
-    Promise.all([getBoardName(boardId), getCardOfColumns(boardId)]).then(() => {
-      dispatch(setLoading(false));
-    }).catch((err) => {
-			history.push("/");
-		})
+    Promise.all([getBoardName(boardId), getCardOfColumns(boardId)])
+      .then(() => {
+        dispatch(setLoading(false));
+      })
+      .catch((err) => {
+        history.push("/");
+      });
   }, []);
+
+  useEffect(() => {
+    setColumns([
+      {
+        id: wellWentCardsId,
+        name: "Well went",
+        cards: wellWentCardList,
+      },
+      {
+        id: toImproveCardsId,
+        name: "To improve",
+        cards: toImproveCardList,
+      },
+      {
+        id: actionItemsCardsId,
+        name: "Action items",
+        cards: actionItemsCardList,
+      },
+    ]);
+  }, [wellWentCardList, toImproveCardList, actionItemsCardList]);
 
   return (
     <div className={classes.root}>
       <div className={classes.header}>
-        <BoardNameInput name={boardName} edit={creatorBoard && edit} toggle={handleEditName} />
-				{creatorBoard && <SharePrivateDelete onShare={handleShareBoard} onPrivate={handlePrivateBoard} onDelete={handleDeleteBoard} publish={publicBoard} />}
+        <BoardNameInput
+          name={boardName}
+          edit={creatorBoard && edit}
+          toggle={handleEditName}
+        />
+        {creatorBoard && (
+          <SharePrivateDelete
+            onShare={handleShareBoard}
+            onPrivate={handlePrivateBoard}
+            onDelete={handleDeleteBoard}
+            publish={publicBoard}
+          />
+        )}
       </div>
 
       <div className={classes.content}>
-        {/* <Grid container>
-          <Grid item xs={4}>
-            <div className={classes.contentItem}>
-              <ColumnBoard
-                id={wellWentCardsId}
-                title="Well went"
-                type={columnType.WELL_WENT}
-                list={wellWentCardList}
-                onSubmitAddCard={handleSubmitAddCard(
-                  wellWentCardsId,
-                  columnType.WELL_WENT
-                )}
-                onSubmitUpdateCard={handleSubmitUpdateCard(
-                  wellWentCardsId,
-                  columnType.WELL_WENT
-                )}
-                onSubmitDeleteCard={handleSubmitDeleteCard(
-                  wellWentCardsId,
-                  columnType.WELL_WENT
-                )}
-              />
-            </div>
-          </Grid>
-          <Grid item xs={4}>
-            <div className={classes.contentItem}>
-              <ColumnBoard
-                id={toImproveCardsId}
-                title="To improve"
-                type={columnType.TO_IMPROVE}
-                list={toImproveCardList}
-                onSubmitAddCard={handleSubmitAddCard(
-                  toImproveCardsId,
-                  columnType.TO_IMPROVE
-                )}
-                onSubmitUpdateCard={handleSubmitUpdateCard(
-                  toImproveCardsId,
-                  columnType.TO_IMPROVE
-                )}
-                onSubmitDeleteCard={handleSubmitDeleteCard(
-                  toImproveCardsId,
-                  columnType.TO_IMPROVE
-                )}
-              />
-            </div>
-          </Grid>
-          <Grid item xs={4}>
-            <div className={classes.contentItem}>
-              <ColumnBoard
-                id={actionItemsCardsId}
-                title="Action items"
-                type={columnType.ACTION_ITEMS}
-                list={actionItemsCardList}
-                onSubmitAddCard={handleSubmitAddCard(
-                  actionItemsCardsId,
-                  columnType.ACTION_ITEMS
-                )}
-                onSubmitUpdateCard={handleSubmitUpdateCard(
-                  actionItemsCardsId,
-                  columnType.ACTION_ITEMS
-                )}
-                onSubmitDeleteCard={handleSubmitDeleteCard(
-                  actionItemsCardsId,
-                  columnType.ACTION_ITEMS
-                )}
-              />
-            </div>
-          </Grid>
-        </Grid> */}
-      <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
-      <DragDropContext
-        // onDragEnd={result => onDragEnd(result, columns, setColumns)}
-      >
-        {columns.map(({id, name, cards}, index) => {
-          return (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center"
-              }}
-              key={id}
-            >
-              <h2>{name}</h2>
-              <div style={{ margin: 8 }}>
-                <Droppable droppableId={id} key={id}>
-                  {(provided, snapshot) => {
-                    return (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        style={{
-                          background: snapshot.isDraggingOver
-                            ? "lightblue"
-                            : "lightgrey",
-                          padding: 4,
-                          width: 250,
-                          minHeight: 500
-                        }}
-                      >
-                        {cards.map(({cardId, content}, index) => {
-                          return (
-                            <Draggable
-                              key={cardId}
-                              draggableId={cardId}
-                              index={index}
-                            >
-                              {(provided, snapshot) => {
-                                return (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    style={{
-                                      userSelect: "none",
-                                      padding: 16,
-                                      margin: "0 0 8px 0",
-                                      minHeight: "50px",
-                                      backgroundColor: snapshot.isDragging
-                                        ? "#263B4A"
-                                        : "#456C86",
-                                      color: "white",
-                                      ...provided.draggableProps.style
-                                    }}
-                                  >
-                                    {content}
-                                  </div>
-                                );
-                              }}
-                            </Draggable>
-                          );
-                        })}
-                        {provided.placeholder}
-                      </div>
-                    );
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            height: "100%",
+						overflow: "auto",
+          }}
+        >
+          <DragDropContext
+            onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+          >
+            {columns.map(({ id, name, cards }, indexColumns) => {
+              return (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+										alignItems: "center",
                   }}
-                </Droppable>
-              </div>
-            </div>
-          );
-        })}
-      </DragDropContext>
-    </div>
-			</div>
+                >
+                  <h3>{name}</h3>
+                  <div className={classes.columnContainer}>
+                    <div className={classes.addButton}>
+                      {renderAddCard(indexColumns)}
+                    </div>
+
+                    <Droppable droppableId={`${id}column`} key={id}>
+                      {(provided, snapshot) => {
+                        return (
+                          <div
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                            style={{
+                              padding: 4,
+                              width: 600,
+                            }}
+                          >
+                            {cards.map(({ id, content }, indexCard) => {
+                              return (
+                                <Draggable
+                                  key={id}
+                                  draggableId={`${id}card`}
+                                  index={indexCard}
+                                >
+                                  {(provided, snapshot) => {
+                                    return (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        style={{
+                                          userSelect: "none",
+                                          margin: "0 0 8px 0",
+                                          ...provided.draggableProps.style,
+                                        }}
+                                      >
+                                        <CardItem
+                                          content={content}
+                                          themeColor={colorCard(indexColumns)}
+                                          id={id}
+                                          onSubmitUpdate={passHandleSubmitUpdateCard(
+                                            indexColumns
+                                          )}
+                                          onSubmitDelete={passHandleSubmitDeleteCard(
+                                            indexColumns
+                                          )}
+                                        />
+                                      </div>
+                                    );
+                                  }}
+                                </Draggable>
+                              );
+                            })}
+                            {provided.placeholder}
+                          </div>
+                        );
+                      }}
+                    </Droppable>
+                  </div>
+                </div>
+              );
+            })}
+          </DragDropContext>
+        </div>
+      </div>
     </div>
   );
 }

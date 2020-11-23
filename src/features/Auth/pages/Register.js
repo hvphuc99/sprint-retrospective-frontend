@@ -25,6 +25,9 @@ const useStyles = makeStyles({
   form: {
     width: 400,
 		boxShadow: "0 2px 8px 0 rgba(62,62,82,0.1)",
+		"@media (max-width: 500px)": {
+			width: 300,
+    },
   },
 });
 

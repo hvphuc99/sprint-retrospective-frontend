@@ -26,7 +26,6 @@ const useStyles = (themeColor) =>
 
 function CardItem({
   id,
-  columnId,
   themeColor,
   content,
   onSubmitUpdate = () => {},

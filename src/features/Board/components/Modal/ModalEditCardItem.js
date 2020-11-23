@@ -59,7 +59,7 @@ function ModalEditCardItem({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth={true}>
       <DialogTitle className={classes.title} disableTypography>
-        <Typography variant="h5">Create board</Typography>
+        <Typography variant="h5">Update card</Typography>
         <IconButton onClick={onClose}>
           <CloseIcon />
         </IconButton>

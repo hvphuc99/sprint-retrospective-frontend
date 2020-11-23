@@ -1,5 +1,5 @@
-import { FormatListBulleted } from "@material-ui/icons";
 import { createSlice } from "@reduxjs/toolkit";
+import * as columnType from "constants/columnType";
 
 const initialState = {
 	currentBoardId: null,
@@ -71,34 +71,61 @@ const boardSlice = createSlice({
 			});
 		},
 		updateWellWentCardList: (state, action) => {
-			state.wellWentCardList = state.wellWentCardList.map(card => {
-				const { id } = card;
-				const { cardId, newContent} = action.payload;
-				if (id === cardId) {
-					card.content = newContent; 
-				}
-				return card;
-			});
+			const { optionAdd } = action.payload;
+			if (!optionAdd) {
+				state.wellWentCardList = state.wellWentCardList.map(card => {
+					const { id } = card;
+					const { cardId, newContent } = action.payload;
+					if (id === cardId) {
+						card.content = newContent; 
+					}
+					return card;
+				});
+			} else {
+				const { id, column_id, created_at, updated_at } = action.payload;
+				state.wellWentCardList[state.wellWentCardList.length - 1].id = id;
+				state.wellWentCardList[state.wellWentCardList.length - 1].column_id = column_id;
+				state.wellWentCardList[state.wellWentCardList.length - 1].created_at = created_at;
+				state.wellWentCardList[state.wellWentCardList.length - 1].updated_at = updated_at;
+			}
 		},
 		updateToImproveCardList: (state, action) => {
-      state.toImproveCardList = state.toImproveCardList.map(card => {
-				const { id } = card;
-				const { cardId, newContent} = action.payload;
-				if (id === cardId) {
-					card.content = newContent; 
-				}
-				return card;
-			});
+			const { optionAdd } = action.payload;
+			if (!optionAdd) {
+				state.toImproveCardList = state.toImproveCardList.map(card => {
+					const { id } = card;
+					const { cardId, newContent } = action.payload;
+					if (id === cardId) {
+						card.content = newContent; 
+					}
+					return card;
+				});
+			} else {
+				const { id, column_id, created_at, updated_at } = action.payload;
+				state.toImproveCardList[state.toImproveCardList.length - 1].id = id;
+				state.toImproveCardList[state.toImproveCardList.length - 1].column_id = column_id;
+				state.toImproveCardList[state.toImproveCardList.length - 1].created_at = created_at;
+				state.toImproveCardList[state.toImproveCardList.length - 1].updated_at = updated_at;
+			}
 		},
 		updateActionItemsCardList: (state, action) => {
-      state.actionItemsCardList = state.actionItemsCardList.map(card => {
-				const { id } = card;
-				const { cardId, newContent} = action.payload;
-				if (id === cardId) {
-					card.content = newContent; 
-				}
-				return card;
-			});
+			const { optionAdd } = action.payload;
+			if (!optionAdd) {
+				state.actionItemsCardList = state.actionItemsCardList.map(card => {
+					const { id } = card;
+					const { cardId, newContent } = action.payload;
+					if (id === cardId) {
+						card.content = newContent; 
+					}
+					return card;
+				});
+			} else {
+				const { id, column_id, created_at, updated_at } = action.payload;
+				state.actionItemsCardList[state.actionItemsCardList.length - 1].id = id;
+				state.actionItemsCardList[state.actionItemsCardList.length - 1].column_id = column_id;
+				state.actionItemsCardList[state.actionItemsCardList.length - 1].created_at = created_at;
+				state.actionItemsCardList[state.actionItemsCardList.length - 1].updated_at = updated_at;
+			}
 		},
 		setCreatorBoard: (state, action) => {
 			state.creatorBoard = action.payload;
