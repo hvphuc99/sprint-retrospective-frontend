@@ -29,7 +29,7 @@ function BoardNameInput({ name = "", edit = false, toggle = () => {} }) {
         name="name"
         value={value}
         disabled={!edit}
-        onChange={handleChange}
+				onChange={handleChange}
         endAdornment={
           <InputAdornment position="end">
             <IconButton

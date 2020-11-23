@@ -3,17 +3,23 @@ import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import ModalShareBoard from "./Modal/ModalShareBoard";
-import ShareIcon from '@material-ui/icons/Share';
-import LockIcon from '@material-ui/icons/Lock';
-import DeleteIcon from '@material-ui/icons/Delete';
+import ShareIcon from "@material-ui/icons/Share";
+import LockIcon from "@material-ui/icons/Lock";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles({
-	root: {
-		display: "flex",
-		justifyContent: "center",
-		alignItems: "center",
-	}
-})
+  root: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    "@media (max-width: 500px)": {
+			flexDirection: "column",
+			"& button": {
+				marginBottom: 5,
+			}
+    },
+  },
+});
 
 function SharePrivateDelete({
   onShare = () => {},
@@ -21,10 +27,10 @@ function SharePrivateDelete({
   publish = false,
   onPrivate = () => {},
 }) {
-	const classes = useStyles();
+  const classes = useStyles();
 
   const [openModal, setOpenModal] = useState(false);
-	const [sharing, setSharing] = useState(publish);
+  const [sharing, setSharing] = useState(publish);
 
   const handleCloseModalShare = () => {
     setOpenModal(false);
@@ -39,26 +45,41 @@ function SharePrivateDelete({
   const handlePrivate = () => {
     setSharing(false);
     onPrivate();
-	};
-	
-	useEffect(() => {
-		setSharing(publish);
-	}, [publish])
+  };
+
+  useEffect(() => {
+    setSharing(publish);
+  }, [publish]);
 
   return (
     <>
       <div className={classes.root}>
         {sharing ? (
-          <Button variant="contained" color="primary" onClick={handlePrivate} startIcon={<LockIcon />}>
-            Set Private
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handlePrivate}
+            startIcon={<LockIcon />}
+          >
+            Private
           </Button>
         ) : (
-          <Button variant="contained" color="primary" onClick={handleShare} startIcon={<ShareIcon />}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleShare}
+            startIcon={<ShareIcon />}
+          >
             Share
           </Button>
         )}
 
-        <Button variant="contained" color="secondary" onClick={onDelete} startIcon={<DeleteIcon />}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onDelete}
+          startIcon={<DeleteIcon />}
+        >
           Delete
         </Button>
       </div>
